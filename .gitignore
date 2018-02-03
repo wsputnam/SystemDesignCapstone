@@ -6,3 +6,4 @@ knexfile.js
 data.csv
 data2.csv
 node_modules/
+newrelic_agent.log
