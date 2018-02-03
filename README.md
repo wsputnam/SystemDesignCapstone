@@ -1,8 +1,3 @@
-# Building a RESTful API with Koa and Postgres
+// This is the repo for my Hack Reactor System Design Capstone
 
-Project base...
-
-1. Fork/Clone
-1. Install dependencies - `npm install`
-1. Sanity check - `npm start`
-1. Test - `npm test`
+// We focused on building a set of microservices to emulate the YouTube API. I created a trending microservice, which aims to calculate the videos with the most recent views (in the last 15 minutes, sent from another microservice handling events) and send those videos to the search and browse microservice.
