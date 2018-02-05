@@ -11,7 +11,7 @@ const app = new Koa();
 const PORT = process.env.PORT || 1337;
 
 // let redis = require('redis');
-// let client = redis.createClient(PORT, {no_ready_check: true});
+// let client = redis.createClient(3000, {no_ready_check: true});
 
 // client.auth((err) => {
 // 	if (err) throw err;

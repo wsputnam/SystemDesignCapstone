@@ -13,8 +13,8 @@ router.get('/', async (ctx) => {
 
 router.get('/trending', async (ctx) => {
   try {
-    const movies = await queries.getTrendingMovies(ctx.params.count);
-    const num = ctx.params.count;
+    const movies = await queries.getTrendingMovies(ctx.request.body.count);
+    const num = ctx.request.body.count;
     ctx.body = {
       status: 'success',
       data: {
@@ -30,7 +30,7 @@ router.get('/trending', async (ctx) => {
 
 router.post('/events', async (ctx) => {
   try {
-    const video = await queries.updateMovies(ctx.params);
+    const video = await queries.updateMovies(ctx.request.body);
     axios.post('videos'); // sending to matt's service
     if (video.length) {
       ctx.body = {
@@ -49,9 +49,11 @@ router.post('/events', async (ctx) => {
 })
 
 
-router.delete('/videos/:id', async (ctx) => {
+router.post('/videos', async (ctx) => {
+  console.log('ctx', ctx.request.body);
   try {
-    const movie = await queries.deleteMovie(ctx.params.video_id);
+    const movie = await queries.deleteMovie(ctx.request.body.video_id);
+    console.log('movie', movie);
     if (movie.length) {
       ctx.status = 200;
       ctx.body = {
