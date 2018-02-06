@@ -30,8 +30,8 @@ router.get('/trending', async (ctx) => {
 
 router.post('/events', async (ctx) => {
   try {
-    const video = await queries.updateMovies(ctx.request.body);
-    axios.post('videos'); // sending to matt's service
+    const video = await queries.updateMovies(ctx.request.body.data);
+    // axios.post('videos'); // sending to matt's service
     if (video.length) {
       ctx.body = {
         status: 'success'
