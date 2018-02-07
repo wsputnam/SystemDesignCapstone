@@ -10,16 +10,6 @@ var faker = require('faker');
 const app = new Koa();
 const PORT = process.env.PORT || 1337;
 
-// let redis = require('redis');
-// let client = redis.createClient(3000, {no_ready_check: true});
-
-// client.auth((err) => {
-// 	if (err) throw err;
-// });
-
-// client.on('connect', () => {
-// 	console.log('Connected to Redis');
-// });
 
 
 app.use(bodyParser());

@@ -6,13 +6,16 @@ function getAllMovies() {
 }
 
 function updateMovies(arr) {
-    var newViews = arr.recent_views;
-    var id = arr.video_id;
-    return knex('movies')
-    .update({recent_views: parseInt(newViews)})
-    .update({total_views: knex.raw('?? + ?', ['total_views', newViews])})
-    .where(knex.raw('video_id = ?', [id]))
-    .returning('*');
+    // for (var i = 0; i < arr.length; i++) {
+      var newViews = arr.recent_views;
+      var id = arr.video_id;
+      console.log('id', id);
+      return knex('movies')
+      .update({recent_views: parseInt(newViews)})
+      .update({total_views: knex.raw('?? + ?', ['total_views', newViews])})
+      .where(knex.raw('video_id = ?', [id]))
+      .returning('*');
+    // }
 }
 
 function indexRecentViews() {
