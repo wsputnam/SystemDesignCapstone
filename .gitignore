@@ -7,3 +7,4 @@ data.csv
 data2.csv
 node_modules/
 newrelic_agent.log
+src/server/routes/config.js
