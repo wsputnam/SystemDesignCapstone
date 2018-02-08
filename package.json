@@ -25,9 +25,11 @@
     "sqs-consumer": "^3.8.0",
     "then-redis": "^2.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nyc": "^11.4.1"
+  },
   "scripts": {
-    "test": "mocha",
+    "test": "nyc mocha",
     "start": "node --max-old-space-size=8192"
   },
   "author": "",

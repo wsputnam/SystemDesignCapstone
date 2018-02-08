@@ -17,37 +17,37 @@ client.on('connect', () => {
 });
 
 // Amazon sqs set up
-const Consumer = require('sqs-consumer');
-const AWS = require('aws-sdk');
+// const Consumer = require('sqs-consumer');
+// const AWS = require('aws-sdk');
 
 
 
-AWS.config.update({
-  region: 'us-east-2',
-  accessKeyId: config.keyId,
-  secretAccessKey: config.key
-});
+// AWS.config.update({
+//   region: 'us-east-2',
+//   accessKeyId: config.keyId,
+//   secretAccessKey: config.key
+// });
 
 
 
 
-const queue = Consumer.create({
-  queueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
-  handleMessage: (message, done) => {
-    console.log('message', message.body);
-    done();
-  },
-  sqs: new AWS.SQS()
+// const queue = Consumer.create({
+//   queueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
+//   handleMessage: (message, done) => {
+//     console.log('message', message.body);
+//     done();
+//   },
+//   sqs: new AWS.SQS()
 
-});
+// });
 
-queue.on('error', (err) => {
-  console.log(err.message);
-});
+// queue.on('error', (err) => {
+//   console.log(err.message);
+// });
 
-queue.start();
+// queue.start();
 
-const sqs = new AWS.SQS();
+// const sqs = new AWS.SQS();
 
 const router = new Router();
 
@@ -81,19 +81,19 @@ router.post('/events', async (ctx) => {
   console.log('ctx', ctx.request.body);
   try {
     const video = await queries.updateMovies(ctx.request.body);
-    var params = {
-      MessageBody: JSON.stringify(video),
-      QueueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
+    // var params = {
+    //   MessageBody: JSON.stringify(video),
+    //   QueueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
 
-    };
-    sqs.sendMessage(params, function(err, data) {
-      if (err) {
-        console.log('error', err);
-      }
-      else {
-        console.log('message', data, video);
-      }
-    });
+    // };
+    // sqs.sendMessage(params, function(err, data) {
+    //   if (err) {
+    //     console.log('error', err);
+    //   }
+    //   else {
+    //     console.log('message', data, video);
+    //   }
+    // });
     if (video.length) {
       ctx.body = {
         status: 'success',

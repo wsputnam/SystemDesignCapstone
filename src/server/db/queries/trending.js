@@ -1,21 +1,20 @@
 const knex = require('../connection');
 
-function getAllMovies() {
-  return knex('movies')
-  .select('*');
-}
+// function getAllMovies() {
+//   return knex('movies')
+//   .select('*');
+// }
 
-function updateMovies(arr) {
-    // for (var i = 0; i < arr.length; i++) {
-      var newViews = arr.recent_views;
-      var id = arr.video_id;
-      console.log('id', id);
-      return knex('movies')
-      .update({recent_views: parseInt(newViews)})
-      .update({total_views: knex.raw('?? + ?', ['total_views', newViews])})
-      .where(knex.raw('video_id = ?', [id]))
-      .returning('*');
-    // }
+function updateMovies(obj) {
+    // var newViews = obj.recent_views;
+    var id = obj.video_id;
+    var newViews = 1;
+    console.log('id', id);
+    return knex('movies')
+    .update({recent_views: 1}) // getting an object upon each view
+    .update({total_views: knex.raw('?? + ?', ['total_views', newViews])})
+    .where(knex.raw('video_id = ?', [id]))
+    .returning('*');
 }
 
 function indexRecentViews() {
@@ -43,7 +42,6 @@ function deleteMovie(id) {
 
 
 module.exports = {
-  getAllMovies,
   updateMovies,
   indexRecentViews,
   getTrendingMovies,
