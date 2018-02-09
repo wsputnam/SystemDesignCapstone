@@ -138,6 +138,30 @@ describe('routes : trending', () => {
                     done();
                 });
         });
+        it('should throw an error if the movie does not exist', (done) => {
+            chai.request(server)
+                .post('/events')
+                .send({
+                    video_id: '123',
+                    recent_views: 1
+                })
+                .end((err, res) => {
+                    // there should an error
+                    should.exist(err);
+                    // there should be a 404 status code
+                    res.status.should.equal(404);
+                    // the response should be JSON
+                    res.type.should.equal('application/json');
+                    // the JSON response body should have a
+                    // key-value pair of {"status": "error"}
+                    res.body.status.should.eql('error');
+                    console.log('res', res.body);
+                    // the JSON response body should have a
+                    // key-value pair of {"message": "That movie does not exist."}
+                    res.body.message.should.eql('not valid');
+                    done();
+                });
+        });
     });
 
 });
