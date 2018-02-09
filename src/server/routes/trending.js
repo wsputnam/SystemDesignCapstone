@@ -95,6 +95,7 @@ router.post('/events', async (ctx) => {
     //   }
     // });
     if (video.length) {
+      ctx.status = 201;
       ctx.body = {
         status: 'success',
         data: {
@@ -113,7 +114,7 @@ router.post('/events', async (ctx) => {
   }
 })
 
-
+// set up new movie uploaded route from Matt
 router.post('/videos', async (ctx) => {
   console.log('ctx', ctx.request.body);
   try {

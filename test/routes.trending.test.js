@@ -106,16 +106,15 @@ describe('routes : trending', () => {
         it('should respond with a single updated movie', (done) => {
             chai.request(server)
                 .post('/events')
-                .set('content-type', 'application/x-www-form-urlencoded')
+                .set('content-type', 'application/json')
                 .send({
-                    video_id: "50",
+                    video_id: "1234",
                     recent_views: 1
 
                 })
                 .end((err, res) => {
                     // there should be no errors
                     console.log('res', res);
-                    console.log('err', err);
                     should.not.exist(err);
                     // there should be a 200 status code
                     res.status.should.equal(201);
@@ -126,7 +125,7 @@ describe('routes : trending', () => {
                     res.body.status.should.eql('success');
                     // the JSON response body should have a
                     // key-value pair of {"data": 1 movie object}
-                    res.body.data.should.include.keys(
+                    res.body.data.video[0].should.include.keys(
                         'video_id', 'recent_views', 'total_views'
                     );
                     done();
