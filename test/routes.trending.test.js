@@ -31,18 +31,21 @@ describe('routes : trending', () => {
                     const lengthBeforeDelete = movies.length;
                     chai.request(server)
                         .post('/videos')
+                        .send({
+                            video_id: 1235
+                        })
                         .end((err, res) => {
                             // there should be no errors
                             should.not.exist(err);
                             // there should be a 200 status code
-                            res.status.should.equal(200);
+                            res.status.should.equal(201);
                             // the response should be JSON
                             res.type.should.equal('application/json');
                             // the JSON response body should have a
                             // key-value pair of {"status": "success"}
                             res.body.status.should.eql('success');
                          
-                            res.body.data.should.include.keys(
+                            res.body.data[0].should.include.keys(
                                 'video_id', 'recent_views', 'total_views'
                             );
                             // ensure the movie was in fact deleted
@@ -56,7 +59,10 @@ describe('routes : trending', () => {
         });
         it('should throw an error if the movie does not exist', (done) => {
             chai.request(server)
-                .delete('/videos')
+                .post('/videos')
+                .send({
+                  video_id: '123'
+                })
                 .end((err, res) => {
                     // there should an error
                     should.exist(err);
@@ -67,6 +73,7 @@ describe('routes : trending', () => {
                     // the JSON response body should have a
                     // key-value pair of {"status": "error"}
                     res.body.status.should.eql('error');
+                    console.log('res', res.body);
                     // the JSON response body should have a
                     // key-value pair of {"message": "That movie does not exist."}
                     res.body.message.should.eql('That movie does not exist.');
@@ -114,7 +121,7 @@ describe('routes : trending', () => {
                 })
                 .end((err, res) => {
                     // there should be no errors
-                    console.log('res', res);
+                    
                     should.not.exist(err);
                     // there should be a 200 status code
                     res.status.should.equal(201);

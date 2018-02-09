@@ -78,7 +78,6 @@ router.get('/trending', async (ctx) => {
 });
 
 router.post('/events', async (ctx) => {
-  console.log('ctx', ctx.request.body);
   try {
     const video = await queries.updateMovies(ctx.request.body);
     // var params = {
@@ -119,9 +118,8 @@ router.post('/videos', async (ctx) => {
   console.log('ctx', ctx.request.body);
   try {
     const movie = await queries.deleteMovie(ctx.request.body.video_id);
-    console.log('movie', movie);
     if (movie.length) {
-      ctx.status = 200;
+      ctx.status = 201;
       ctx.body = {
         status: 'success',
         data: movie
