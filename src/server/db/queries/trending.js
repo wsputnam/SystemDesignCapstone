@@ -1,5 +1,14 @@
 const knex = require('../connection');
 
+const statsDConfig = require('../../routes/StatsDConfig.js');
+const statsD = require('node-statsd');
+const statsDClient = new statsD({
+  host: '89287653.carbon.hostedgraphite.com',
+  port: 2003,
+  prefix: statsDConfig.API
+  // prefix: process.env.HOSTEDGRAPHITE_APIKEY
+});
+
 // function getAllMovies() {
 //   return knex('movies')
 //   .select('*');
@@ -10,11 +19,15 @@ function updateMovies(obj) {
     var id = obj.video_id;
     var newViews = 1;
     console.log('id', id);
+
+  statsDClient.timing('.service.fire.query.latency_ms', Date.now());
+
     return knex('movies')
     .update({recent_views: 1}) // getting an object upon each view
     .update({total_views: knex.raw('?? + ?', ['total_views', newViews])})
     .where(knex.raw('video_id = ?', [id]))
     .returning('*');
+
 }
 
 function indexRecentViews() {
@@ -23,10 +36,15 @@ function indexRecentViews() {
 
 function getTrendingMovies(num) {
   var num = num || 3;
+
+  statsDClient.timing('.service.fire.query.latency_ms', Date.now());
+
   return knex('movies')
+
   .select('video_id')
   .orderBy('recent_views', 'desc')
   .limit(num);
+
 }
 
 

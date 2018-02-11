@@ -20,9 +20,11 @@
     "koa-session": "^5.8.1",
     "mocha": "^5.0.0",
     "newrelic": "^2.7.0",
+    "node-statsd": "^0.1.1",
     "pg": "^7.1.2",
     "redis": "^2.8.0",
     "sqs-consumer": "^3.8.0",
+    "statsd": "^0.8.0",
     "then-redis": "^2.0.1"
   },
   "devDependencies": {

@@ -4,6 +4,15 @@ const axios = require('axios');
 const config = require('./config.js');
 
 
+const statsDConfig = require('./StatsDConfig.js');
+const statsD = require('node-statsd');
+const statsDClient = new statsD({
+  host: '89287653.carbon.hostedgraphite.com',
+  port: 2003,
+  prefix: statsDConfig.API
+  // prefix: process.env.HOSTEDGRAPHITE_APIKEY
+});
+
 // redis cache set up
 let redis = require('redis');
 let client = redis.createClient(6379, {no_ready_check: true});
@@ -60,7 +69,12 @@ router.get('/', async (ctx) => {
 
 router.get('/trending', async (ctx) => {
   try {
+    statsDClient.increment('.service.fire.query.all');
+
+
     const movies = await queries.getTrendingMovies(ctx.request.body.count);
+    statsDClient.timing('.service.fire.query.latency_ms', Date.now());
+
     const num = ctx.request.body.count;
     client.flushdb();
     client.hmset(movies, [movies]);
@@ -79,7 +93,10 @@ router.get('/trending', async (ctx) => {
 
 router.post('/events', async (ctx) => {
   try {
+    statsDClient.increment('.service.fire.query.all');
+
     const video = await queries.updateMovies(ctx.request.body);
+    statsDClient.timing('.service.fire.query.latency_ms', Date.now());
     // var params = {
     //   MessageBody: JSON.stringify(video),
     //   QueueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
