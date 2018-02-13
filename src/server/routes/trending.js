@@ -7,8 +7,8 @@ const config = require('./config.js');
 const statsDConfig = require('./StatsDConfig.js');
 const statsD = require('node-statsd');
 const statsDClient = new statsD({
-  host: '89287653.carbon.hostedgraphite.com',
-  port: 2003,
+  host: 'statsd.hostedgraphite.com',
+  port: 8125,
   prefix: statsDConfig.API
   // prefix: process.env.HOSTEDGRAPHITE_APIKEY
 });
@@ -69,16 +69,18 @@ router.get('/', async (ctx) => {
 
 router.get('/trending', async (ctx) => {
   try {
-    statsDClient.increment('.service.fire.query.all');
-
+    var start = Date.now();
+    statsDClient.increment('.service.fire.query.notAll', 1);
 
     const movies = await queries.getTrendingMovies(ctx.request.body.count);
-    statsDClient.timing('.service.fire.query.latency_ms', Date.now());
+    statsDClient.timing('.service.fire.query.trending_latency_ms', Date.now() - start);
 
     const num = ctx.request.body.count;
     client.flushdb();
     client.hmset(movies, [movies]);
     client.hmget(movies);
+    statsDClient.timing('.service.fire.query.trending_node_latency_ms', Date.now() - start);
+
     ctx.body = {
       status: 'success',
       data: {
@@ -93,10 +95,10 @@ router.get('/trending', async (ctx) => {
 
 router.post('/events', async (ctx) => {
   try {
-    statsDClient.increment('.service.fire.query.all');
-
+    var start = Date.now();
+    statsDClient.increment('.service.fire.query.all', 1);
     const video = await queries.updateMovies(ctx.request.body);
-    statsDClient.timing('.service.fire.query.latency_ms', Date.now());
+    statsDClient.timing('.service.fire.query.update_latency_ms', Date.now() - start);
     // var params = {
     //   MessageBody: JSON.stringify(video),
     //   QueueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
@@ -112,6 +114,8 @@ router.post('/events', async (ctx) => {
     // });
     if (video.length) {
       ctx.status = 201;
+      statsDClient.timing('.service.fire.query.update_node_latency_ms', Date.now() - start);
+
       ctx.body = {
         status: 'success',
         data: {
