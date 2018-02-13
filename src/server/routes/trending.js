@@ -26,37 +26,37 @@ client.on('connect', () => {
 });
 
 // Amazon sqs set up
-// const Consumer = require('sqs-consumer');
-// const AWS = require('aws-sdk');
+const Consumer = require('sqs-consumer');
+const AWS = require('aws-sdk');
 
 
 
-// AWS.config.update({
-//   region: 'us-east-2',
-//   accessKeyId: config.keyId,
-//   secretAccessKey: config.key
-// });
+AWS.config.update({
+  region: 'us-east-2',
+  accessKeyId: config.keyId,
+  secretAccessKey: config.key
+});
 
 
 
 
-// const queue = Consumer.create({
-//   queueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
-//   handleMessage: (message, done) => {
-//     console.log('message', message.body);
-//     done();
-//   },
-//   sqs: new AWS.SQS()
+const queue = Consumer.create({
+  queueUrl: 'https://sqs.us-east-2.amazonaws.com/482177334603/trendin',
+  handleMessage: (message, done) => {
+    console.log('message', message.body);
+    done();
+  },
+  sqs: new AWS.SQS()
 
-// });
+});
 
-// queue.on('error', (err) => {
-//   console.log(err.message);
-// });
+queue.on('error', (err) => {
+  console.log(err.message);
+});
 
-// queue.start();
+queue.start();
 
-// const sqs = new AWS.SQS();
+const sqs = new AWS.SQS();
 
 const router = new Router();
 
@@ -71,16 +71,26 @@ router.get('/trending', async (ctx) => {
   try {
     var start = Date.now();
     statsDClient.increment('.service.fire.query.notAll', 1);
-
-    const movies = await queries.getTrendingMovies(ctx.request.body.count);
+    
+    var movies = await client.get('3');
+    if (movies) {
+      console.log('redis in action');
+      ctx.body = {
+        status: 'success',
+        data: {
+          count: 3, // || num
+          movies
+        }
+      }
+    } else {
+    var movies = await queries.getTrendingMovies(ctx.request.body.count);
     statsDClient.timing('.service.fire.query.trending_latency_ms', Date.now() - start);
 
     const num = ctx.request.body.count;
     client.flushdb();
-    client.hmset(movies, [movies]);
-    client.hmget(movies);
     statsDClient.timing('.service.fire.query.trending_node_latency_ms', Date.now() - start);
-
+    client.set('3', movies);
+   
     ctx.body = {
       status: 'success',
       data: {
@@ -88,6 +98,7 @@ router.get('/trending', async (ctx) => {
         movies
        }
     }
+  }
   } catch (err) {
     console.log('error', err)
   }
@@ -99,19 +110,19 @@ router.post('/events', async (ctx) => {
     statsDClient.increment('.service.fire.query.all', 1);
     const video = await queries.updateMovies(ctx.request.body);
     statsDClient.timing('.service.fire.query.update_latency_ms', Date.now() - start);
-    // var params = {
-    //   MessageBody: JSON.stringify(video),
-    //   QueueUrl: 'https://sqs.us-east-2.amazonaws.com/928047465876/Trending',
+    var params = {
+      MessageBody: JSON.stringify(video),
+      QueueUrl: 'https://sqs.us-east-2.amazonaws.com/482177334603/trendin',
 
-    // };
-    // sqs.sendMessage(params, function(err, data) {
-    //   if (err) {
-    //     console.log('error', err);
-    //   }
-    //   else {
-    //     console.log('message', data, video);
-    //   }
-    // });
+    };
+    sqs.sendMessage(params, function(err, data) {
+      if (err) {
+        console.log('error', err);
+      }
+      else {
+        console.log('message', data, video);
+      }
+    });
     if (video.length) {
       ctx.status = 201;
       statsDClient.timing('.service.fire.query.update_node_latency_ms', Date.now() - start);
