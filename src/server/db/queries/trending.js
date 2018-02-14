@@ -15,14 +15,12 @@ function updateMovies(obj) {
     var id = obj.video_id;
     var newViews = 1;
     console.log('id', id);
-  var start = Date.now();
 
     return knex('movies')
     .update({recent_views: 1}) // getting an object upon each view
     .update({total_views: knex.raw('?? + ?', ['total_views', newViews])})
     .where(knex.raw('video_id = ?', [id]))
     .returning('*');
-  statsDClient.timing('.service.fire.query.update_query_latency_ms', Date.now() - start);
 
 }
 

@@ -60,6 +60,9 @@ const sqs = new AWS.SQS();
 
 const router = new Router();
 
+// cron job to flush redis db
+setInterval(client.flushdb, 900000);
+
 router.get('/', async (ctx) => {
   ctx.body = {
     status: 'success',
@@ -72,7 +75,7 @@ router.get('/trending', async (ctx) => {
     var start = Date.now();
     statsDClient.increment('.service.fire.query.notAll', 1);
     
-    var movies = await client.get('3');
+    var movies = await client.get('3'); // count will always be 3
     if (movies) {
       console.log('redis in action');
       ctx.body = {
@@ -87,7 +90,6 @@ router.get('/trending', async (ctx) => {
     statsDClient.timing('.service.fire.query.trending_latency_ms', Date.now() - start);
 
     const num = ctx.request.body.count;
-    client.flushdb();
     statsDClient.timing('.service.fire.query.trending_node_latency_ms', Date.now() - start);
     client.set('3', movies);
    
