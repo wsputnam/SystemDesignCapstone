@@ -62,20 +62,13 @@ const router = new Router();
 
 // cron job to flush redis db
 var flushRedis = new CronJob('* */10 * * * *', function () {
-  /*
-   * Runs every weekday (Monday through Friday)
-   * at 11:30:00 AM. It does not run on Saturday
-   * or Sunday.
-   */
+ 
   client.flushdb();
 }, null,
-  true, /* Start the job right now */
-  'America/Los_Angeles' /* Time zone of this job. */
+  true,
+  'America/Los_Angeles' 
 );
 
-// setInterval(function() {
-//   client.flushdb();
-// }, 900000);
 
 router.get('/', async (ctx) => {
   ctx.body = {
@@ -86,8 +79,7 @@ router.get('/', async (ctx) => {
 
 router.get('/trending', async (ctx) => {
   try {
-    // var start = Date.now();
-    // statsDClient.increment('.service.fire.query.notAll', 1);
+  
     
     var movies = null;
     client.get('3', function(err, res) {
@@ -107,10 +99,8 @@ router.get('/trending', async (ctx) => {
     } else {
     movies = await queries.getTrendingMovies(3);
     console.log('movies', movies)
-    // statsDClient.timing('.service.fire.query.trending_latency_ms', Date.now() - start);
 
     const num = 3;
-    // statsDClient.timing('.service.fire.query.trending_node_latency_ms', Date.now() - start);
     client.set('3', JSON.stringify(movies), function (err) {
       if (err) {
         console.log('error', err);
@@ -132,11 +122,9 @@ router.get('/trending', async (ctx) => {
 
 router.post('/events', async (ctx) => {
   try {
-    // var start = Date.now();
-    // statsDClient.increment('.service.fire.query.all', 1);
+   
     client.set('newViews', JSON.stringify(ctx.request.body));
-    // const video = await queries.updateMovies(ctx.request.body);
-    // statsDClient.timing('.service.fire.query.update_latency_ms', Date.now() - start);
+
     var params = {
       MessageBody: JSON.stringify(ctx.request.body),
       QueueUrl: 'https://sqs.us-east-2.amazonaws.com/482177334603/trendin',
@@ -146,13 +134,12 @@ router.post('/events', async (ctx) => {
       if (err) {
         console.log('error', err);
       }
-      // else {
-      //   console.log('message HELLO!!', data, ctx.request.body);
-      // }
+      else {
+        console.log('message HELLO!!', data, ctx.request.body);
+      }
     });
     if (ctx.request.body) {
       ctx.status = 201;
-      // statsDClient.timing('.service.fire.query.update_node_latency_ms', Date.now() - start);
 
       ctx.body = {
         status: 'success',
@@ -171,23 +158,15 @@ router.post('/events', async (ctx) => {
 
 // updating postgres db from updated table in redis cache every 5 minutes
 var updatePG = new CronJob('* */4 * * * *', function () {
-  /*
-   * Runs every weekday (Monday through Friday)
-   * at 11:30:00 AM. It does not run on Saturday
-   * or Sunday.
-   */
+
   client.get('newViews', function (err, res) {
     queries.updateMovies(res);
-  })
-  // queries.updateMovies(client.get('newViews'));
+  });
 }, null,
-  true, /* Start the job right now */
-  'America/Los_Angeles' /* Time zone of this job. */
+  true, 
+  'America/Los_Angeles'
 );
-// setInterval(function() {
-//   console.log('updating postgres db');
-//   queries.updateMovies(client.get('newViews'));
-// }, 300000);
+
 
 // set up new movie uploaded route from Matt
 router.post('/videos', async (ctx) => {
