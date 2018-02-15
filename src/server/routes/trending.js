@@ -16,7 +16,7 @@ var CronJob = require('cron').CronJob;
 
 // redis cache set up
 let redis = require('redis');
-let client = redis.createClient(6379, {no_ready_check: true});
+let client = redis.createClient(process.host.REDIS_HOST || 6379, {no_ready_check: true});
 
 client.auth((err) => {
   if (err) console.log('error', err);
