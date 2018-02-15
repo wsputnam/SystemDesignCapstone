@@ -9,3 +9,4 @@ node_modules/
 newrelic_agent.log
 src/server/routes/config.js
 src/server/routes/statsDConfig.js
+devenv-key.pem
