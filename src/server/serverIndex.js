@@ -1,12 +1,11 @@
 require('newrelic');
 
-const statsDConfig = require('./routes/StatsDConfig.js');
 const statsD = require('node-statsd');
 const statsDClient = new statsD({
     host: 'statsd.hostedgraphite.com',
     port: 8125,
-    prefix: statsDConfig.API
-    // prefix: process.env.HOSTEDGRAPHITE_APIKEY
+    // prefix: statsDConfig.API
+    prefix: process.env.HOSTEDGRAPHITE_APIKEY
 });
 
 

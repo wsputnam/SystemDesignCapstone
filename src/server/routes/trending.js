@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const queries = require('../db/queries/trending.js');
-const config = require('./config.js');
+// const config = require('./config.js');
 var CronJob = require('cron').CronJob;
 
 
