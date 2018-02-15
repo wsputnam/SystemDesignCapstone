@@ -1,18 +1,13 @@
 const knex = require('../connection');
 
-const statsDConfig = require('../../routes/StatsDConfig.js');
-const statsD = require('node-statsd');
-const statsDClient = new statsD({
-  host: 'statsd.hostedgraphite.com',
-  port: 8125,
-  prefix: statsDConfig.API
-  // prefix: process.env.HOSTEDGRAPHITE_APIKEY
-});
-
 
 function updateMovies(obj) {
-    // var newViews = obj.recent_views;
-    var id = obj.video_id;
+    console.log('obj', obj);
+    obj = JSON.parse(obj);
+    var id;
+    if (obj) {
+      id = obj.video_id;
+    }
     var newViews = 1;
     console.log('id', id);
 
@@ -30,14 +25,12 @@ function indexRecentViews() {
 
 function getTrendingMovies(num) {
   var num = num || 3;
-  var start = Date.now();
 
   return knex('movies')
 
   .select('video_id')
   .orderBy('recent_views', 'desc')
   .limit(num);
-  // statsDClient.timing('.service.fire.query.trending_query_latency_ms', Date.now() - start);
 
 
 }
